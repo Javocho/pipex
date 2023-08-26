@@ -6,7 +6,7 @@
 #    By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 13:05:07 by fcosta-f          #+#    #+#              #
-#    Updated: 2023/08/24 13:56:24 by fcosta-f         ###   ########.fr        #
+#    Updated: 2023/08/26 13:20:30 by fcosta-f         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ DEPS	= $(OBJS:.o=.d)
 
 CC			= cc
 RM			= rm -f
-CFLAGS		= -Wall -Wextra -Werror -g -MMD
+CFLAGS		= -Wall -Wextra -Werror -g -MMD -fsanitize=address
 
 NAME		= pipex
 all:
