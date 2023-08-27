@@ -6,7 +6,7 @@
 #    By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 13:05:07 by fcosta-f          #+#    #+#              #
-#    Updated: 2023/08/26 13:20:30 by fcosta-f         ###   ########.fr        #
+#    Updated: 2023/08/27 20:31:04 by fcosta-f         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,7 @@ all:
 	
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) libft/libft.a $(OBJS) -o ${NAME}
+	$(CC) $(CFLAGS) printf/libftprintf.a libft/libft.a $(OBJS) -o ${NAME}
 
 -include $(DEPS)
 

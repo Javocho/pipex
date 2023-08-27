@@ -6,7 +6,7 @@
 /*   By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:36:35 by fcosta-f          #+#    #+#             */
-/*   Updated: 2023/08/26 13:39:47 by fcosta-f         ###   ########.fr       */
+/*   Updated: 2023/08/27 20:35:10 by fcosta-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,13 @@ char	*find_cmd(char **routes, char *cmd)
 	while (*routes)
 	{
 		tmp = ft_strjoin(*routes, "/");
+		//dprintf(2, "route %s\n", tmp);
 		cmdroute = ft_strjoin(tmp, cmd);
+		//dprintf(2, "cmdroute %s\n", cmdroute);
 		if (!cmdroute)
 			return (NULL);
 		free(tmp);
-		if (access(tmp, F_OK | X_OK) == 0)
+		if (access(cmdroute, F_OK | X_OK) == 0)
 			return (cmdroute);
 		free(cmdroute);
 		++routes;
@@ -64,15 +66,15 @@ char	*find_cmd(char **routes, char *cmd)
 void	first_child(t_pipe pipex, char **argv, char **envp)
 {
 	//mejor abrir en hijos uwu
-	dup2(pipex.infile, 0);
-	dup2(pipex.tube[1], 1);
+	dup2(pipex.infile, STDIN_FILENO);
+	dup2(pipex.tube[1], STDOUT_FILENO);
+	// ft_printf(2, "1ST::::he entrau%i,%i\n", pipex.infile, pipex.tube[1]);
 	close(pipex.tube[0]);
 	close(pipex.tube[1]);
 	close(pipex.outfile);
 	close(pipex.infile);
 	pipex.cmd_args = ft_split(argv[2], ' ');
 	pipex.cmd = find_cmd(pipex.routes, pipex.cmd_args[0]);
-	dprintf(2, "cmd: %s\n", pipex.cmd);
 	if (!pipex.cmd)
 	{
 		ft_free(&pipex);
@@ -81,19 +83,21 @@ void	first_child(t_pipe pipex, char **argv, char **envp)
 	}
 	else
 		execve(pipex.cmd, pipex.cmd_args, envp);
-	exit(1);
 }
 
 void	second_child(t_pipe pipex, char **argv, char **envp)
 {
-	dup2(pipex.tube[0], 0);
-	dup2(pipex.outfile, 1);
+	dup2(pipex.tube[0], STDIN_FILENO);
+	dup2(pipex.outfile, STDOUT_FILENO);
+	// ft_printf(2, "he entrau%i,%i\n", pipex.outfile, pipex.tube[0]);
 	close(pipex.tube[1]);
 	close(pipex.tube[0]);
 	close(pipex.infile);
 	close(pipex.outfile);
+	// printf("hola");
 	pipex.cmd_args = ft_split(argv[3], ' ');
 	pipex.cmd = find_cmd(pipex.routes, pipex.cmd_args[0]);
+	//dprintf(2, "\n%s\n", pipex.cmd);
 	if (!pipex.cmd)
 	{
 		ft_free(&pipex);
@@ -102,7 +106,6 @@ void	second_child(t_pipe pipex, char **argv, char **envp)
 	}
 	else
 		execve(pipex.cmd, pipex.cmd_args, envp);
-	exit(1);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -115,7 +118,7 @@ int	main(int argc, char **argv, char **envp)
 		pipex.permission = access(argv[1], F_OK | R_OK);
 		if (pipex.infile == -1 || pipex.permission == -1)
 			return (-1);
-		pipex.outfile = open(argv[argc - 1], O_TRUNC | O_CREAT, 0666);
+		pipex.outfile = open(argv[argc - 1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
 		pipex.permission = access(argv[1], W_OK);
 		if (pipex.outfile == -1 || pipex.permission == -1)
 			return (-1); //close?
@@ -123,7 +126,7 @@ int	main(int argc, char **argv, char **envp)
 			return (-1); //close??
 		pipex.routes = ft_split(find_path(envp), ':');
 		pipex.proc1 = fork();
-		printf("%d\n", pipex.proc1);
+		//printf("%d\n", pipex.proc1);
 		if (pipex.proc1 == 0)
 			first_child(pipex, argv, envp);
 		pipex.proc2 = fork();
