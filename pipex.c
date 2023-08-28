@@ -15,16 +15,18 @@
 char	*find_path(char **envp)
 {
 	//tiene que existir
-	while (ft_strncmp(*envp, "PATH=", 5))
+	while (envp && ft_strncmp(*envp, "PATH=", 5)) //tendría que haber arreglado error unset path... he modificado hasta el split
 		envp++;
+	if (ft_strncmp(*envp, "PATH=", 5))
+		return (NULL);
 	return (*envp + 5);
 }
 
-void	close_files(int infile, int outfile)
-{
-	close(infile);
-	close(outfile);
-}
+// void	close_files(int infile, int outfile)
+// {
+// 	close(infile);
+// 	close(outfile);
+// }
 
 void	ft_free(t_pipe *pipex)
 {
@@ -57,6 +59,8 @@ char	*find_cmd(char **routes, char *cmd)
 		free(tmp);
 		if (access(cmdroute, F_OK | X_OK) == 0)
 			return (cmdroute);
+		else
+			write(3, "command not found", 17);
 		free(cmdroute);
 		++routes;
 	}
@@ -65,44 +69,55 @@ char	*find_cmd(char **routes, char *cmd)
 
 void	first_child(t_pipe pipex, char **argv, char **envp)
 {
-	//mejor abrir en hijos uwu
+	pipex.infile = open(argv[1], O_RDONLY);
+	pipex.permission = access(argv[1], F_OK | R_OK);
+	if (pipex.infile == -1)
+	{
+		write(3, "No such file or directory", 25); //tiene que poner infile: No such file... ???
+		exit(-1); //tendria que cerrar pipe
+	}
+	if (pipex.permission == -1)
+	{
+		write(3, "Permission denied", 17);
+		exit(-1); //tendria que cerrar pipe
+	}
 	dup2(pipex.infile, STDIN_FILENO);
 	dup2(pipex.tube[1], STDOUT_FILENO);
 	// ft_printf(2, "1ST::::he entrau%i,%i\n", pipex.infile, pipex.tube[1]);
 	close(pipex.tube[0]);
 	close(pipex.tube[1]);
-	close(pipex.outfile);
 	close(pipex.infile);
 	pipex.cmd_args = ft_split(argv[2], ' ');
 	pipex.cmd = find_cmd(pipex.routes, pipex.cmd_args[0]);
-	if (!pipex.cmd)
+	if (!pipex.cmd) //error escrito??
 	{
 		ft_free(&pipex);
-		close_files(pipex.infile, pipex.outfile);
-		exit(0);
+		exit(-1);
 	}
 	else
 		execve(pipex.cmd, pipex.cmd_args, envp);
 }
 
-void	second_child(t_pipe pipex, char **argv, char **envp)
+void	second_child(t_pipe pipex, char **argv, int argc, char **envp)
 {
+	pipex.outfile = open(argv[argc - 1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
+	pipex.permission = access(argv[1], W_OK);
+	if (pipex.outfile == -1 || pipex.permission == -1)
+	{
+		write(3, "Permission denied", 17);
+		exit(-1); //tendria que cerrar pipe
+	}
 	dup2(pipex.tube[0], STDIN_FILENO);
 	dup2(pipex.outfile, STDOUT_FILENO);
-	// ft_printf(2, "he entrau%i,%i\n", pipex.outfile, pipex.tube[0]);
 	close(pipex.tube[1]);
 	close(pipex.tube[0]);
-	close(pipex.infile);
 	close(pipex.outfile);
-	// printf("hola");
 	pipex.cmd_args = ft_split(argv[3], ' ');
 	pipex.cmd = find_cmd(pipex.routes, pipex.cmd_args[0]);
-	//dprintf(2, "\n%s\n", pipex.cmd);
-	if (!pipex.cmd)
+	if (!pipex.cmd) //error escrito?? y exit importante que es el que devuelve el padre
 	{
 		ft_free(&pipex);
-		close_files(pipex.infile, pipex.outfile);
-		exit(0);
+		exit(-1);
 	}
 	else
 		execve(pipex.cmd, pipex.cmd_args, envp);
@@ -111,32 +126,27 @@ void	second_child(t_pipe pipex, char **argv, char **envp)
 int	main(int argc, char **argv, char **envp)
 {
 	t_pipe	pipex;
+	int		*status = NULL;
 
 	if (argc == 5)
 	{
-		pipex.infile = open(argv[1], O_RDONLY);
-		pipex.permission = access(argv[1], F_OK | R_OK);
-		if (pipex.infile == -1 || pipex.permission == -1)
-			return (-1);
-		pipex.outfile = open(argv[argc - 1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
-		pipex.permission = access(argv[1], W_OK);
-		if (pipex.outfile == -1 || pipex.permission == -1)
-			return (-1); //close?
 		if (pipe(pipex.tube) == -1)
-			return (-1); //close??
+			return (-1);
 		pipex.routes = ft_split(find_path(envp), ':');
+		if (!pipex.routes)
+			exit(-1);
 		pipex.proc1 = fork();
 		//printf("%d\n", pipex.proc1);
 		if (pipex.proc1 == 0)
 			first_child(pipex, argv, envp);
 		pipex.proc2 = fork();
 		if (pipex.proc2 == 0)
-			second_child(pipex, argv, envp);
-		close_files(pipex.infile, pipex.outfile);
+			second_child(pipex, argv, argc, envp); //tengo que proteger que se cree hijo?
 		close(pipex.tube[0]);
 		close(pipex.tube[1]);
 		waitpid(pipex.proc1, NULL, 0);
-		waitpid(pipex.proc2, NULL, 0);
-		//ft_free(&pipex);
+		waitpid(pipex.proc2, status, 0);
+		//ft_free(&pipex); liberar esto
+		//hacer returns aquí verificando salida de exit de hijos con wifexited(status), wexitstatus(status)
 	}
 }
