@@ -16,6 +16,14 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+# define ERR_ARG	(int)1
+# define ERR_MC		(int)2
+# define ERR_CNF	(int)3
+# define ERR_PERM	(int)4
+# define ERR_NFD	(int)5
+# define ERR_PERR	(int)10
+# define NO_PATH	(char *)"no"
+
 typedef struct s_pipe
 {
 	int		infile;
