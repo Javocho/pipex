@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/22 19:36:35 by fcosta-f          #+#    #+#             */
-/*   Updated: 2023/08/27 20:35:10 by fcosta-f         ###   ########.fr       */
+/*   Created: 2023/08/30 18:51:16 by fcosta-f          #+#    #+#             */
+/*   Updated: 2023/08/30 19:14:11 by fcosta-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
 char	*find_path(char **envp, int *found)
 {
@@ -53,29 +53,6 @@ int	ft_error(int ext, int err, char *cmd)
 	return (ext);
 }
 
-// void	close_files(int infile, int outfile)
-// {
-// 	close(infile);
-// 	close(outfile);
-// }
-
-// void	ft_free(t_pipe *pipex)
-// {
-// 	char	**tmp_args;
-// 	char	*tmp;
-
-// 	tmp_args = pipex->cmd_args;
-// 	while (*tmp_args)
-// 	{
-// 		tmp = *tmp_args;
-// 		tmp_args++;
-// 		free(tmp);
-// 	}
-// 	//free(pipex->cmd_args);
-// 	close(pipex->tube[0]);
-// 	close(pipex->tube[1]);
-// }
-
 char	*find_cmd(char **routes, char *cmd)
 {
 	char	*tmp;
@@ -94,7 +71,7 @@ char	*find_cmd(char **routes, char *cmd)
 		if (access(cmdroute, F_OK | X_OK) == 0)
 			return (cmdroute);
 		free(cmdroute);
-		++routes; //o es ++(*routes)????
+		++routes;
 	}
 	if (access(cmd, F_OK | X_OK) == 0 && ft_strchr(cmd, '/'))
 		return (cmd);
@@ -121,7 +98,6 @@ void	first_child(t_pipe pipex, char **argv, char **envp)
 	}
 	dup2(pipex.infile, STDIN_FILENO);
 	dup2(pipex.tube[1], STDOUT_FILENO);
-	// ft_printf(2, "1ST::::he entrau%i,%i\n", pipex.infile, pipex.tube[1]);
 	close(pipex.tube[0]);
 	close(pipex.tube[1]);
 	close(pipex.infile);
@@ -195,7 +171,4 @@ int	main(int argc, char **argv, char **envp)
 	return (ft_error(1, ERR_ARG, NULL));
 }
 
-//hay mucho timeout
-//hay cosas que no devuelven lo que deberían en exit
-//creo que hay un error si no tiene permisos para outfile
-//cuando no existe archivo no digo nada o no existe PATH ni archivo
+//Hacer bucle de forks (con un solo fork) con dos pipes una que apunte al fd anterior para enlazarlo con el nuevo y una función que espere al último proceso para obtener su status
