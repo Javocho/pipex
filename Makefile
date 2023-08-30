@@ -18,7 +18,7 @@ DEPS	= $(OBJS:.o=.d)
 
 CC			= cc
 RM			= rm -f
-CFLAGS		= -Wall -Wextra -Werror -g -MMD
+CFLAGS		= -Wall -Wextra -Werror -g -MMD -fsanitize=address
 
 NAME		= pipex
 all:
