@@ -6,7 +6,7 @@
 /*   By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/30 18:58:01 by fcosta-f          #+#    #+#             */
-/*   Updated: 2023/08/30 19:06:45 by fcosta-f         ###   ########.fr       */
+/*   Updated: 2023/08/31 17:57:29 by fcosta-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,9 @@ typedef struct s_pipe
 	int		outfile;
 	int		permission;
 	char	**routes;
-	pid_t	proc1;
-	pid_t	proc2;
+	pid_t	proc;
 	int		tube[2];
 	char	**cmd_args;
 	char	*cmd;
+	int		j;
 }	t_pipe;

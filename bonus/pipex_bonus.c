@@ -6,7 +6,7 @@
 /*   By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/30 18:51:16 by fcosta-f          #+#    #+#             */
-/*   Updated: 2023/08/30 19:14:11 by fcosta-f         ###   ########.fr       */
+/*   Updated: 2023/08/31 19:19:57 by fcosta-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	*find_path(char **envp, int *found)
 	i = 0;
 	if (!envp)
 		return (NULL);
-	while (envp[i] && ft_strncmp(envp[i], "PATH=", 5)) //tendría que haber arreglado error unset path... he modificado hasta el split
+	while (envp[i] && ft_strncmp(envp[i], "PATH=", 5))
 		i++;
 	if (!envp[i])
 	{
@@ -32,8 +32,8 @@ char	*find_path(char **envp, int *found)
 
 void	close_pipes(t_pipe *pipex)
 {
-	close(pipex->tube[0]);
 	close(pipex->tube[1]);
+	close(pipex->tube[0]);
 }
 
 int	ft_error(int ext, int err, char *cmd)
@@ -98,6 +98,7 @@ void	first_child(t_pipe pipex, char **argv, char **envp)
 	}
 	dup2(pipex.infile, STDIN_FILENO);
 	dup2(pipex.tube[1], STDOUT_FILENO);
+	// ft_printf(2, "1ST::::he entrau%i,%i\n", pipex.infile, pipex.tube[1]);
 	close(pipex.tube[0]);
 	close(pipex.tube[1]);
 	close(pipex.infile);
@@ -138,37 +139,63 @@ void	second_child(t_pipe pipex, char **argv, int argc, char **envp)
 		execve(pipex.cmd, pipex.cmd_args, envp);
 }
 
+void	child(t_pipe pipex, char **argv, int argc, char **envp)
+{
+	if (pipex.j == 2)
+		first_child(pipex, argv, envp);
+	if (pipex.j == argc - 2)
+		second_child(pipex, argv, argc, envp);
+	else
+	{
+		dup2(pipex.tube[0], STDIN_FILENO);
+		close(pipex.tube[1]);
+		close(pipex.tube[0]);
+		pipex.cmd_args = ft_split(argv[2], ' ');
+		pipex.cmd = find_cmd(pipex.routes, pipex.cmd_args[0]);
+		if (!pipex.cmd)
+			exit(127);
+		else
+			execve(pipex.cmd, pipex.cmd_args, envp);
+	}
+}
+
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_pipe	pipex;
 	int		found;
 	int		status;
+	int		exit_code;
 
-	if (argc == 5)
+	if (argc >= 5)
 	{
-		if (pipe(pipex.tube) == 1)
-			return (1);
+		
 		pipex.routes = ft_split(find_path(envp, &found), ':');
 		if (!found)
 			exit(1);
 		if (!pipex.routes)
 			exit(ft_error(1, ERR_MC, NULL));
-		pipex.proc1 = fork();
-		if (pipex.proc1 == 0)
-			first_child(pipex, argv, envp);
-		pipex.proc2 = fork();
-		if (pipex.proc2 == 0)
-			second_child(pipex, argv, argc, envp);
-		close(pipex.tube[0]);
-		close(pipex.tube[1]);
-		waitpid(pipex.proc1, NULL, 0);
-		waitpid(pipex.proc2, &status, 0);
-		if (WIFEXITED(status))
-			exit(WEXITSTATUS(status));
+		pipex.j = 2; //+ flag de here_dock más adelante xd aaaa
+		while (pipex.j < argc)
+		{
+			if (pipex.j < argc - 1 && pipe(pipex.tube))
+				return (1);
+			pipex.proc = fork();
+			if (pipex.proc == 0)
+				child(pipex, argv, argc, envp);
+			dup2(pipex.tube[0], STDIN_FILENO);
+			close(pipex.tube[0]);
+			close(pipex.tube[1]);
+		}
+		while (pipex.j > 2) //+flags
+		{
+			if (waitpid(-1, &status, 0) == pipex.proc)
+				exit_code = status;
+			pipex.j--;
+		}
+		if (WIFEXITED(exit_code))
+			exit(WEXITSTATUS(exit_code));
 		exit(1);
 	}
 	return (ft_error(1, ERR_ARG, NULL));
 }
-
-//Hacer bucle de forks (con un solo fork) con dos pipes una que apunte al fd anterior para enlazarlo con el nuevo y una función que espere al último proceso para obtener su status

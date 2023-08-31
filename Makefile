@@ -6,7 +6,7 @@
 #    By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 13:05:07 by fcosta-f          #+#    #+#              #
-#    Updated: 2023/08/30 19:10:29 by fcosta-f         ###   ########.fr        #
+#    Updated: 2023/08/31 19:23:17 by fcosta-f         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,9 @@ RM			= rm -f
 CFLAGS		= -Wall -Wextra -Werror -g -MMD -fsanitize=address
 
 NAME		= pipex
+
+NAME_BONUS	= pipex_bonus
+
 all:
 	@$(MAKE) -C libft
 	@$(MAKE) -C printf  
@@ -57,4 +60,8 @@ fclean: clean
 
 re: fclean all
 
+rebonus: fclean bonus
+
 .PHONY: clean all bonus fclean re
+
+#MIRAR 10.5.2 Pattern Rule Examples
