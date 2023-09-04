@@ -34,4 +34,5 @@ typedef struct s_pipe
 	char	**cmd_args;
 	char	*cmd;
 	int		j;
+	int		here_doc;
 }	t_pipe;

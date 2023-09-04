@@ -6,7 +6,7 @@
 #    By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 13:05:07 by fcosta-f          #+#    #+#              #
-#    Updated: 2023/08/31 19:23:17 by fcosta-f         ###   ########.fr        #
+#    Updated: 2023/09/01 20:28:56 by fcosta-f         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ DEPS_BONUS	= $(OBJS_BONUS:.o=.d)
 
 CC			= cc
 RM			= rm -f
-CFLAGS		= -Wall -Wextra -Werror -g -MMD -fsanitize=address
+CFLAGS		= -Wall -Wextra -Werror -g -MMD #-fsanitize=address
 
 NAME		= pipex
 
@@ -44,7 +44,7 @@ $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) printf/libftprintf.a libft/libft.a $(OBJS) -o ${NAME}
 
 $(NAME_BONUS): $(OBJS_BONUS)
-	$(CC) $(CFLAGS) printf/libftprintf.a libft/libft.a $(OBJS_BONUS) -o ${NAME}
+	$(CC) $(CFLAGS) printf/libftprintf.a libft/libft.a $(OBJS_BONUS) -o ${NAME_BONUS}
 
 -include $(DEPS)
 -include $(DEPS_BONUS)

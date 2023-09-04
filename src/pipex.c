@@ -6,7 +6,7 @@
 /*   By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:36:35 by fcosta-f          #+#    #+#             */
-/*   Updated: 2023/08/31 17:27:26 by fcosta-f         ###   ########.fr       */
+/*   Updated: 2023/09/04 19:04:59 by fcosta-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	*find_path(char **envp, int *found)
 	i = 0;
 	if (!envp)
 		return (NULL);
-	while (envp[i] && ft_strncmp(envp[i], "PATH=", 5)) //tendría que haber arreglado error unset path... he modificado hasta el split
+	while (envp[i] && ft_strncmp(envp[i], "PATH=", 5))
 		i++;
 	if (!envp[i])
 	{
