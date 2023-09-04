@@ -6,7 +6,7 @@
 /*   By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 13:37:28 by fcosta-f          #+#    #+#             */
-/*   Updated: 2023/08/30 19:06:44 by fcosta-f         ###   ########.fr       */
+/*   Updated: 2023/09/04 20:39:53 by fcosta-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,3 +35,9 @@ typedef struct s_pipe
 	char	**cmd_args;
 	char	*cmd;
 }	t_pipe;
+
+int		find_route(t_pipe *pipex, char **envp);
+char	*find_path(char **envp, int *found);
+char	*find_cmd(char **routes, char *cmd);
+int		ft_error(int ext, int err, char *cmd);
+void	close_pipes(t_pipe *pipex);

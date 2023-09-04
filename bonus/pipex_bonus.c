@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jareste- <fcosta-f@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/30 18:51:16 by eralonso          #+#    #+#             */
-/*   Updated: 2023/09/03 13:21:00 by fcosta-f         ###   ########.fr       */
+/*   Created: 2023/08/30 18:51:16 by fcosta-f          #+#    #+#             */
+/*   Updated: 2023/09/04 20:20:16 by fcosta-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,7 +192,7 @@ int	main(int argc, char **argv, char **envp)
 		if (!pipex.routes)
 			exit(ft_error(1, ERR_MC, NULL));
 		pipex.here_doc = 0;
-		if (fta_strncmp(argv[2], "here_doc", 9))
+		if (ft_strncmp(argv[2], "here_doc", 9))
 			pipex.here_doc = 1;
 		pipex.j = 2 + pipex.here_doc; //falta añadir heredoc next_line, pipe, fork
 		while (pipex.j < argc - 1)

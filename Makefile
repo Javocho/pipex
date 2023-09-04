@@ -6,11 +6,11 @@
 #    By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 13:05:07 by fcosta-f          #+#    #+#              #
-#    Updated: 2023/09/01 20:28:56 by fcosta-f         ###   ########.fr        #
+#    Updated: 2023/09/04 20:19:51 by fcosta-f         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS	= src/pipex.c
+SRCS	= src/pipex.c src/pipex_utils.c
 
 SRCS_BONUS	= bonus/pipex_bonus.c
 
@@ -55,6 +55,7 @@ clean:
 
 fclean: clean
 		$(RM) $(NAME)
+		$(RM) $(NAME_BONUS)
 		@$(MAKE) -C libft fclean
 		@$(MAKE) -C printf fclean
 
