@@ -6,39 +6,21 @@
 /*   By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:36:35 by fcosta-f          #+#    #+#             */
-/*   Updated: 2023/09/04 20:37:11 by fcosta-f         ###   ########.fr       */
+/*   Updated: 2023/09/05 18:35:12 by fcosta-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-// void	ft_free(t_pipe *pipex)
-// {
-// 	char	**tmp_args;
-// 	char	*tmp;
-
-// 	tmp_args = pipex->cmd_args;
-// 	while (*tmp_args)
-// 	{
-// 		tmp = *tmp_args;
-// 		tmp_args++;
-// 		free(tmp);
-// 	}
-// 	//free(pipex->cmd_args);
-// 	close(pipex->tube[0]);
-// 	close(pipex->tube[1]);
-// }
-//NO CAL PERÒ ACONSELLABLE??
-
 void	first_child(t_pipe pipex, char **argv, char **envp)
 {
-	pipex.infile = open(argv[1], O_RDONLY);
-	if (pipex.infile == -1)
+	if (access(argv[1], F_OK) == -1)
 	{
 		close_pipes(&pipex);
 		exit(ft_error(1, ERR_NFD, argv[1]));
 	}
-	pipex.permission = access(argv[1], F_OK | R_OK);
+	pipex.infile = open(argv[1], O_RDONLY);
+	pipex.permission = access(argv[1], R_OK);
 	if (pipex.permission == -1)
 	{
 		close_pipes(&pipex);

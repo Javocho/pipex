@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex_utils.c                                      :+:      :+:    :+:   */
+/*   pipex_bonus_finds.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/04 18:24:03 by fcosta-f          #+#    #+#             */
-/*   Updated: 2023/09/05 11:23:21 by fcosta-f         ###   ########.fr       */
+/*   Created: 2023/09/05 17:30:44 by fcosta-f          #+#    #+#             */
+/*   Updated: 2023/09/05 17:31:05 by fcosta-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
 int	find_route(t_pipe *pipex, char **envp)
 {
@@ -67,27 +67,4 @@ char	*find_cmd(char **routes, char *cmd)
 	else
 		ft_error(127, ERR_CNF, cmd);
 	return (NULL);
-}
-
-int	ft_error(int ext, int err, char *cmd)
-{
-	if (err == ERR_ARG)
-		ft_printf(2, "bash: Invalid number of arguments\n");
-	else if (err == ERR_MC)
-		ft_printf(2, "bash: error trying to allocate memory\n");
-	else if (err == ERR_CNF)
-		ft_printf(2, "pipex: %s: command not found\n", cmd);
-	else if (err == ERR_NFD)
-		ft_printf(2, "pipex: %s: No such file or directory\n");
-	else if (err == ERR_PERM)
-		ft_printf(2, "pipex: %s: permission denied\n");
-	else if (err == ERR_PERR)
-		perror("bash: ");
-	return (ext);
-}
-
-void	close_pipes(t_pipe *pipex)
-{
-	close(pipex->tube[0]);
-	close(pipex->tube[1]);
 }

@@ -1,72 +1,46 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex_utils.c                                      :+:      :+:    :+:   */
+/*   pipex_bonus_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/04 18:24:03 by fcosta-f          #+#    #+#             */
-/*   Updated: 2023/09/05 11:23:21 by fcosta-f         ###   ########.fr       */
+/*   Created: 2023/09/05 10:57:04 by fcosta-f          #+#    #+#             */
+/*   Updated: 2023/09/05 17:48:01 by fcosta-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
-int	find_route(t_pipe *pipex, char **envp)
+void	init_pipex(t_pipe *pipex, char **argv, char **envp)
 {
-	int	found;
-
-	pipex->routes = ft_split(find_path(envp, &found), ':');
-	if (!found)
-		return (1);
-	if (!pipex->routes)
-		return (ft_error(1, ERR_MC, NULL));
-	return (0);
+	if (find_route(pipex, envp) == 1)
+		exit(1);
+	pipex->here_doc = !ft_strncmp(argv[1], "here_doc", 9);
+	pipex->j = 2 + pipex->here_doc;
 }
 
-char	*find_path(char **envp, int *found)
+void	last_pipe(t_pipe *pipex, int argc)
 {
-	int	i;
-
-	i = 0;
-	if (!envp)
-		return (NULL);
-	while (envp[i] && ft_strncmp(envp[i], "PATH=", 5))
-		i++;
-	if (!envp[i])
+	if (pipex->j < argc - 2)
 	{
-		*found = 0;
-		return (NULL);
+		dup2(pipex->tube[0], STDIN_FILENO);
+		close_pipes(pipex);
 	}
-	*found = 1;
-	return (envp[i] + 5);
 }
 
-char	*find_cmd(char **routes, char *cmd)
+int	wait_forks(t_pipe *pipex)
 {
-	char	*tmp;
-	char	*cmdroute;
+	int	status;
+	int	exit_code;
 
-	while (*routes)
+	while (pipex->j > 2 + pipex->here_doc)
 	{
-		tmp = ft_strjoin(*routes, "/");
-		cmdroute = ft_strjoin(tmp, cmd);
-		if (!cmdroute)
-		{
-			ft_error(1, ERR_MC, NULL);
-			return (NULL);
-		}
-		free(tmp);
-		if (access(cmdroute, F_OK | X_OK) == 0)
-			return (cmdroute);
-		free(cmdroute);
-		++routes;
+		if (wait(&status) == pipex->proc)
+			exit_code = status;
+		pipex->j--;
 	}
-	if (access(cmd, F_OK | X_OK) == 0 && ft_strchr(cmd, '/'))
-		return (cmd);
-	else
-		ft_error(127, ERR_CNF, cmd);
-	return (NULL);
+	return (exit_code);
 }
 
 int	ft_error(int ext, int err, char *cmd)

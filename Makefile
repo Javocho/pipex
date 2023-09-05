@@ -6,13 +6,15 @@
 #    By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/24 13:05:07 by fcosta-f          #+#    #+#              #
-#    Updated: 2023/09/04 20:19:51 by fcosta-f         ###   ########.fr        #
+#    Updated: 2023/09/05 17:31:42 by fcosta-f         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS	= src/pipex.c src/pipex_utils.c
 
-SRCS_BONUS	= bonus/pipex_bonus.c
+SRCS_BONUS	= bonus/pipex_bonus.c bonus/pipex_bonus_utils.c \
+bonus/pipex_bonus_finds.c \
+get_next_line/get_next_line.c get_next_line/get_next_line_utils.c
 
 OBJS	= $(SRCS:.c=.o)
 
@@ -29,6 +31,9 @@ CFLAGS		= -Wall -Wextra -Werror -g -MMD #-fsanitize=address
 NAME		= pipex
 
 NAME_BONUS	= pipex_bonus
+
+%.o : %.c Makefile
+	$(CC) -c $(CFLAGS) $< -o $@
 
 all:
 	@$(MAKE) -C libft
