@@ -6,13 +6,13 @@
 /*   By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/30 18:51:16 by fcosta-f          #+#    #+#             */
-/*   Updated: 2023/09/05 18:40:24 by fcosta-f         ###   ########.fr       */
+/*   Updated: 2023/09/05 19:56:26 by fcosta-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
-void	open_infile(t_pipe *pipex, char **argv)
+static void	open_infile(t_pipe *pipex, char **argv)
 {
 	if (access(argv[1], F_OK) == -1)
 	{
@@ -32,7 +32,7 @@ void	open_infile(t_pipe *pipex, char **argv)
 	close(pipex->infile);
 }
 
-void	here_doc(t_pipe *pipex, char **argv)
+static void	here_doc(t_pipe *pipex, char **argv)
 {
 	int		fd_doc[2];
 	char	*str;
@@ -60,7 +60,7 @@ void	here_doc(t_pipe *pipex, char **argv)
 	close(fd_doc[1]);
 }
 
-void	open_outfile(t_pipe *pipex, char *outfile)
+static void	open_outfile(t_pipe *pipex, char *outfile)
 {
 	if (pipex->here_doc)
 		pipex->outfile = open(outfile, O_WRONLY | O_APPEND | O_CREAT, 0666);
@@ -82,7 +82,7 @@ void	open_outfile(t_pipe *pipex, char *outfile)
 	close_pipes(pipex);
 }
 
-void	child(t_pipe pipex, char **argv, int argc, char **envp)
+static void	child(t_pipe pipex, char **argv, int argc, char **envp)
 {
 	if (pipex.j == 2 + pipex.here_doc)
 	{

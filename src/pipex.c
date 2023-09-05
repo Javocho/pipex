@@ -6,13 +6,13 @@
 /*   By: fcosta-f <fcosta-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:36:35 by fcosta-f          #+#    #+#             */
-/*   Updated: 2023/09/05 18:55:29 by fcosta-f         ###   ########.fr       */
+/*   Updated: 2023/09/05 19:57:28 by fcosta-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	first_child(t_pipe pipex, char **argv, char **envp)
+static void	first_child(t_pipe pipex, char **argv, char **envp)
 {
 	if (access(argv[1], F_OK) == -1)
 	{
@@ -38,7 +38,7 @@ void	first_child(t_pipe pipex, char **argv, char **envp)
 		execve(pipex.cmd, pipex.cmd_args, envp);
 }
 
-void	second_child(t_pipe pipex, char **argv, int argc, char **envp)
+static void	second_child(t_pipe pipex, char **argv, int argc, char **envp)
 {
 	pipex.outfile = open(argv[argc - 1], O_WRONLY | O_TRUNC | O_CREAT, 0666);
 	if (pipex.outfile == -1)
